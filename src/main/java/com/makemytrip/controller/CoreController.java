@@ -37,10 +37,8 @@ public class CoreController {
 
     @RequestMapping(value = "/api/upload/voice", method = RequestMethod.POST)
     @ResponseBody
-    public String voiceUpload(MultipartHttpServletRequest request, HttpServletResponse response,
-                           HttpSession session) {
-        String result = "";
-
+    public Map<String, Object> voiceUpload(MultipartHttpServletRequest request, HttpServletResponse response,
+                                           HttpSession session) {
         Iterator<String> itr = request.getFileNames();
 
         MultipartFile mpf;
@@ -58,16 +56,19 @@ public class CoreController {
             File newFile = new File(pathname);
             try {
                 mpf.transferTo(newFile);
-                String convertedString = this.voiceProcessor.process(pathname);
-
-                return convertedString;
-
+                Map<String, Object> resultMap = this.voiceProcessor.process(pathname);
+                // Delete the file.
+                boolean status = newFile.delete();
+                if(!status) {
+                    logger.error("Uploaded file is not deleted :: " + pathname);
+                }
+                return resultMap;
             } catch(Exception e) {
                 String errorMessage = "uploadImage::failed::Could not upload file::" + e.getMessage();
                 logger.error(errorMessage + "::" + mpf.getOriginalFilename(), e);
             }
         }
 
-        return result;
+        return new HashMap<>();
     }
 }

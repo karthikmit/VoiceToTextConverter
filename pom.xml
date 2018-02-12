@@ -31,6 +31,14 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>it.sauronsoftware</groupId>
+            <artifactId>jave</artifactId>
+            <version>1.0.2</version>
+            <scope>system</scope>
+            <systemPath>/data/lib/jave-1.0.2.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
