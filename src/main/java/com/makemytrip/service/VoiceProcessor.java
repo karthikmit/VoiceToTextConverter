@@ -1,5 +1,11 @@
 package com.makemytrip.service;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.polly.AmazonPolly;
+import com.amazonaws.services.polly.AmazonPollyClient;
+import com.amazonaws.services.polly.model.*;
 import com.google.cloud.speech.v1.RecognitionAudio;
 import com.google.cloud.speech.v1.RecognitionConfig;
 import com.google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
@@ -16,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,8 +33,21 @@ public class VoiceProcessor {
 
     @Autowired private TranscoderUtils transcoder;
     @Autowired private PropertiesFetcher propertiesFetcher;
+    @Autowired private TTSCoder ttsCoder;
 
     private static Logger logger = LoggerFactory.getLogger(VoiceProcessor.class);
+
+    public InputStream respond(String fileName) throws Exception {
+        Map<String, Object> resultsHolder = process(fileName);
+        List<VoiceToTextResult> results = (List<VoiceToTextResult>) resultsHolder.get("results");
+        if(results.size() > 0) {
+            VoiceToTextResult textResult = results.get(0);
+            String text = textResult.getText();
+
+            return ttsCoder.convertTextToVoice(text);
+        }
+        return null;
+    }
 
     public Map<String, Object> process(String fileName) throws Exception {
 
@@ -60,7 +80,7 @@ public class VoiceProcessor {
         RecognitionConfig config = RecognitionConfig.newBuilder()
                 .setEncoding(AudioEncoding.FLAC)
                 .setSampleRateHertz(Integer.parseInt(sampleRateString))
-                .setLanguageCode("en-IN")
+                .setLanguageCode("hi-IN")
                 .build();
         RecognitionAudio audio = RecognitionAudio.newBuilder()
                 .setContent(audioBytes)
