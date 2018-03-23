@@ -31,7 +31,7 @@ public class TTSCoder {
     private AmazonS3 amazonS3;
 
     public TTSCoder() {
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials("AKIAIZHNPH77ZY7VPCWA", "cQ9Ye8/m8DwHdiEmQ+uc2OSCe9x9dZbekOxXaacr");
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials("AKIAJG7ZS2VUL2FG44TA", "BGEzaCkZbVtMB/Mv1seWWIGy/Cb0B/fL18skvtX0");
         pollyClient = AmazonPollyClient.builder().withClientConfiguration(new ClientConfiguration())
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials)).withRegion(Regions.AP_SOUTH_1).build();
         amazonS3 = AmazonS3ClientBuilder.standard().withClientConfiguration(new ClientConfiguration())
